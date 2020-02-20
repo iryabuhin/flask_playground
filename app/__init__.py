@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
@@ -20,4 +20,5 @@ configure_uploads(app, imgs)
 patch_request_class(app)
 moment = Moment(app)
 
-from app import db_models, routes
+
+from app import db_models, routes  # needed to avoid multiple imports

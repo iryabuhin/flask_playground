@@ -40,6 +40,6 @@ class TaskSubmitForm(FlaskForm):
     submit = SubmitField('Add task')
 
     def validate_task_name(self, text):
-        task_name = Task.query.filter_by(name=text).first()
+        task_name = Task.query.filter_by(name=text.data).first()
         if task_name == text:
             raise ValidationError('Task names must be unique!')
