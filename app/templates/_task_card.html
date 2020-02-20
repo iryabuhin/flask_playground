@@ -1,0 +1,30 @@
+<div class="card my_card">
+    <div class="card-body">
+        <h5 class="card-title">
+                {{ task.name }}
+                {% if not task.completed %}
+                    <div class="col-md-2 float-right d-inline-block align-top">
+                        <a role="button" type="button" alt="Mark as completed"
+                           class="btn btn-success btn-sm" href="/completed/{{ task.id }}">
+                            <span aria-hidden="true">&#10004;</span>
+                        </a>
+                    </div>
+                {% endif %}
+        </h5>
+        {% if task.img_url %}
+            <img class="card-img-top" src="{{ task.img_url }}" alt="Task attachment">
+        {% endif %}
+        <p class="card-text">
+            {% if task.completed %}
+                <span class="badge badge-success">Task completed!</span>
+                <span aria-hidden="true">&#10004;</span> {% else %}
+                <span class="badge badge-secondary">Task not finished</span>
+            {% endif %}
+        </p>
+        <a href="/delete_task/{{ task.id }}" class="card-link">Remove</a>
+        <a type="button" class="card-link" data-toggle="modal" data-target="#modal_form" style="color: #0056b3">Edit</a>
+    </div>
+    <div class="card-footer text-muted" style="font-size: x-small">
+        Added {{ moment(task.timestamp).fromNow() }}
+    </div>:
+</div>
