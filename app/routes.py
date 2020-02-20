@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, flash, url_for
+from flask import render_template, redirect, request, flash
 from app import app, db, imgs
 from app.db_models import User, Task
 from app.forms import RegistrationForm, LoginForm, TaskSubmitForm
@@ -8,9 +8,7 @@ from datetime import datetime
 from config import uploads_dir
 import os
 
-
-# TODO add the ability to allow users to set reminders on their tasks
-# TODO allow users add images or other files to their tasks
+# still haven't figured out how url_for works, so writing urls by hand for now
 
 
 @login_required
@@ -47,7 +45,6 @@ def add_task():
         return redirect('/')
 
 
-# TODO test "delete" and "edit" functions, add the "completed" function
 @login_required
 @app.route('/delete_task/<int:id>', methods=['GET'])
 def delete_task(id):
@@ -102,9 +99,6 @@ def register_user():
         db.session.add(user)
         db.session.commit()
         flash('Registration successfully completed!', category='success')
-        print('=' * 60)
-        print(f'USER REGISTERED: {user.username} | {user.email}, {user.first_name} {user.last_name}')
-        print('=' * 60)
         return redirect('/')
 
     return render_template('register_form.html', form=form)
@@ -131,7 +125,7 @@ def login():
 
 
 @login_required
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
     return redirect('/')
