@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Todo Tasks</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        .my_container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: medium;
+            font-family: sans-serif;
+            margin-top: 2rem;
+        }
+
+        .alert {
+            margin-bottom: 0;
+        }
+
+        .user_logged_in {
+            font-size: medium;
+            margin-top: 25px;
+            width: auto;
+            background-color: #75bf75;
+        }
+
+        .my_card {
+            margin-bottom: 25px;
+            width: auto;
+            height: auto;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .card-img-top {
+            width: auto;
+            height: 15rem;
+            object-fit: cover;
+        }
+
+        .badge-warning {
+            font-size: medium;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+{% include "_navbar.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% include '_flashed_messages.html' %}
+<div class="my_container">
+    <div style="margin-bottom: 25px" id="user_greeting">
+        {% if current_user.is_authenticated %}
+            <span class="badge user_logged_in">Hello, <b style="color: black">{{ current_user.username }}</b></span>
+        {% endif %}
+    </div>
+    <div>
+        {% if current_user.is_authenticated %}
+            <div>
+                <form action="/add" method="POST" enctype="multipart/form-data">
+                    <div class="form-group mb-2">
+                        {{ task_submit_form.hidden_tag() }}
+                        {{ task_submit_form.text(class="form-control", placeholder="Learn Flask and be cool!") }}
+                    </div>
+                    <div class="form-group">
+                        <label class="btn btn-sm btn-block btn-primary" for="file_upload">
+                            {{ task_submit_form.image(class="form-control-file", id="file_upload") }}
+                            Attach an image
+                        </label>
+                        <span id="file-selected"></span>
+                    </div>
+                    {% for error in task_submit_form.text.errors %}
+                        <div class="alert alert-info" role="alert">{{ error }}</div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-info btn-sm btn-block">Add task</button>
+                </form>
+                <br>
+            </div>
+            {% if tasks %}
+                {% for task in tasks %}
+                    <div class="card my_card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ task.name }}
+                                {% if not task.completed %}
+                                    <div class="col-md-2 float-right d-inline-block align-top">
+                                        <a role="button" type="button" alt="Mark as completed"
+                                           class="btn btn-success btn-sm" href="/completed/{{ task.id }}">
+                                            <span aria-hidden="true">&#10004;</span>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </h5>
+                            {% if task.img_url %}
+                                <img class="card-img-top" src="{{ task.img_url }}" alt="Task attachment">
+                            {% endif %}
+                            <p class="card-text">
+                                {% if task.completed %}
+                                    <span class="badge badge-success">Task completed!</span>
+                                    <span aria-hidden="true">&#10004;</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Task not finished</span>
+                                {% endif %}
+                            </p>
+                            <a href="/delete_task/{{ task.id }}" class="card-link">Remove</a>
+                            <a type="button" class="card-link" data-toggle="modal" data-target="#modal_form"
+                               style="color: #0056b3">Edit</a>
+                        </div>
+                        {% include "rename.html" %}
+                        <div class="card-footer text-muted" style="font-size: x-small">
+                            Added {{ moment(task.timestamp).fromNow() }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <span class="badge badge-warning btn-block">It seems you dont have any tasks yet :/</span>
+            {% endif %}
+        {% else %}
+            <div class="my_container">
+                <div class="jumbotron">
+                    <p class="lead text-center">You have to be logged in to view your tasks!</p>
+                    <hr class="my-4">
+                    <p class="lead">
+                        <a class="btn btn-primary btn-block" style="border-radius: 25px" href="/login" role="button">Log
+                            In</a>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+    {{ moment.include_moment() }}
+    <script>
+        $('#file_upload').bind('change', function () {
+            let fileName = '';
+            fileName = $(this).val().replace(/^.*[\\\/]/, '');
+            $('#file-selected').html(fileName);
+        })
+    </script>
+</div>
+</body>
+
+</html>
