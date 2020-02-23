@@ -37,8 +37,11 @@ def add_task():
         else:
             img_url = ''
 
-        task = Task(name=form.text.data, timestamp=datetime.utcnow(), completed=False,
-                    user_id=current_user.id, img_url=img_url)
+        task = Task(name=form.text.data,
+                    timestamp=datetime.utcnow(),
+                    completed=False,
+                    user_id=current_user.id,
+                    img_url=img_url)
         db.session.add(task)
         db.session.commit()
         flash('Task added!', category='warning')
@@ -49,7 +52,6 @@ def add_task():
 @app.route('/delete_task/<int:id>', methods=['GET'])
 def delete_task(id):
     task = Task.query.filter_by(id=id).first_or_404()
-    print()
     filename = task.img_url
     full_path_to_img = os.path.join(uploads_dir, filename[filename.find('images'):]).replace('/', '\\')
     try:
