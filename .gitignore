@@ -8,6 +8,9 @@ __pycache__/
 # C extensions
 *.so
 
+# DB migrations with alembic
+migrations/
+
 # Distribution / packaging
 .Python
 build/
