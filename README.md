@@ -1,2 +1,2 @@
-# flask_todo_app_demo
-  sorry I can't do frontend yet I'll fix this mess I promise
+# Playground app to learn Flask and sqlalchemy
+Based on Miguel Gribgerg's Flask book
